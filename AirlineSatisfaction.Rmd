@@ -89,6 +89,11 @@ train <- prepareDataset(train)
 test <- prepareDataset(test)
 ```
 
+```{r, include=FALSE}
+rm(prepareDataset)
+gc()
+```
+
 Let's take a look at the first few rows of the training dataset to ensure that
 the transformation was successful.
 
