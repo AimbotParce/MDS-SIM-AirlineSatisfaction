@@ -1,7 +1,9 @@
 ---
-title: "Project Title"
+title: "Airline Satisfaction"
 author: 
   - Marc Parcerisa
+  - Albert Puiggròs
+  - Dani Reverter
 output:
     pdf_document: default
     html_document: default
@@ -11,7 +13,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-<!-- README.md is generated from ProjectName.Rmd. Please edit that file. --> 
+<!-- README.md is generated from AirlineSatisfaction.Rmd. Please edit that file. --> 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "images/")

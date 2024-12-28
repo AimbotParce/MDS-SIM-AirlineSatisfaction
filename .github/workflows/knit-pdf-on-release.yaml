@@ -1,8 +1,8 @@
 name: Knit PDF on Release
 
 env:
-    RMD_FILE: ProjectName.Rmd
-    TARGET_PDF: ProjectName
+    RMD_FILE: AirlineSatisfaction.Rmd
+    TARGET_PDF: AirlineSatisfaction
   
 on:
   release:

@@ -1,7 +1,7 @@
 name: Knit MD on Push
 
 env:
-  RMD_FILE: ProjectName.Rmd
+  RMD_FILE: AirlineSatisfaction.Rmd
   TARGET_MD: README.md
 
 on:
@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - ProjectName.Rmd
+      - AirlineSatisfaction.Rmd
       - .github/workflows/knit-md-on-push.yaml # This file (for dev purposes)
 
 jobs:
