@@ -1,0 +1,22 @@
+---
+title: "Project Title"
+author: 
+  - Marc Parcerisa
+output:
+    pdf_document: default
+    html_document: default
+    md_document: 
+      variant: markdown_github
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- README.md is generated from ProjectName.Rmd. Please edit that file. --> 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "images/")
+```
+
+```{r, include=FALSE}
+# Load libraries
+```
