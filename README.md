@@ -179,7 +179,7 @@ for (col in names(numeric_df)) {
 
     ## Column Departure.Delay.in.Minutes has 248 mild outliers and 407 severe outliers
 
-![](images/unnamed-chunk-10-1.png)
+![](images/unnamed-chunk-11-1.png)
 
     ## Column Arrival.Delay.in.Minutes has 252 mild outliers and 410 severe outliers
 
@@ -202,7 +202,7 @@ plot(train$Departure.Delay.in.Minutes, train$Arrival.Delay.in.Minutes, xlab = "D
 abline(a = 0, b = 1, col = "red")
 ```
 
-![](images/unnamed-chunk-12-1.png)
+![](images/unnamed-chunk-13-1.png)
 
 No points seem to be too far from the red line, so we’ll consider them
 as valid data points.
