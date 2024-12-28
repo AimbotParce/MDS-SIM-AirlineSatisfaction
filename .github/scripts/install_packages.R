@@ -1,4 +1,4 @@
-required_packages <- c("rmarkdown") # Add more packages as needed
+required_packages <- c("rmarkdown", "readr", "FactoMineR", "cluster") # Add more packages as needed
 
 install_if_missing <- function(packages) {
     for (pkg in packages) {

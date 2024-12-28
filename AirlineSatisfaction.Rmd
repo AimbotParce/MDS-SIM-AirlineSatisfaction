@@ -21,4 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "images/")
 
 ```{r, include=FALSE}
 # Load libraries
+library(readr)
+library(FactoMineR)
+library(cluster)
 ```
