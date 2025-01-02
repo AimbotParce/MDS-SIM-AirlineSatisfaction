@@ -216,8 +216,15 @@ address this issue in later sections.
 table(train$satisfaction)
 ```
 
+# Exploratory Data Analysis
+
+<!-- + Profiling -->
+<!-- Afegir histogrames. :) -->
+<!-- Catdes per satisfaction. -->
+<!-- Mirar el model final (el m6) a veure si hi hauria alguna cosa a afegir -->
 
 # Feature Selection
+
 ```{r}
 numeric_vars <- sapply(train, is.numeric)
 summary(train[, numeric_vars])
@@ -255,7 +262,6 @@ for (var in categorical_vars) {
 }
 ```
 
-
 Regarding numerical varaibles, the correlation matrix shows that Age and Flight.
 Distance have a low positive correlation (0.1147), indicating minimal 
 association between the two variables. The Arrival.Delay.in.Minutes and
@@ -274,8 +280,9 @@ and the quality of services like inflight entertainment, wifi, cleanliness, and
 comfort during the flight. To perform the Chi-Square test, we had to eliminate
 the categories of the categorical variables that were empty.
 
+## Numeric Variables
+
 ```{r}
-# NUMERIC VARIABLES
 m0 <- glm(satisfaction ~ 1, data = train, family = binomial)
 
 summary(m0)
@@ -335,6 +342,34 @@ the most critical improvements werethe addition of `Flight.Distance`, the
 refinement of `Age` using polynomial terms, and the inclusion of
 `Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests.
 
+# Factor & Factor Interaction Variables
+
+```{r}
+par(mfrow = c(1, 1))
+# STEP
+initial_model <- glm(
+  satisfaction ~ Gender + Customer.Type + poly(Age, 2) + Arrival.Delay.in.Minutes + (Type.of.Travel +
+    Class + Flight.Distance + Inflight.wifi.service + Departure.Arrival.time.convenient +
+    Ease.of.Online.booking + Gate.location + Food.and.drink + Online.boarding +
+    Seat.comfort + Inflight.entertainment + On.board.service + Leg.room.service +
+    Baggage.handling + Checkin.service + Inflight.service + Cleanliness +
+    Departure.Delay.in.Minutes)^2,
+  data = train, family = binomial
+)
+
+stepwise_model <- step(initial_model, direction = "both", trace = 0)
+
+# RESIDUAL ANALYSIS OF THE STEP MODEL
+marginalModelPlots(stepwise_model)
+residualPlots(stepwise_model)
+
+coef(stepwise_model)
+Anova(stepwise_model, test = "LR")
+AIC(stepwise_model)
+vif(stepwise_model)
+vif(stepwise_model, type = "predictor")
+```
+
 # Model Validation
 
 Using the training dataset, we have built a logistic regression model to predict
@@ -344,7 +379,7 @@ testing dataset.
 Let's start by predicting the satisfaction levels for the testing dataset.
 
 ```{r}
-test$Satisfaction.Prob <- predict(model, newdata = test, type = "response")
+test$Satisfaction.Prob <- predict(stepwise_model, newdata = test, type = "response")
 ```
 
 Due to the `type="response"` parameter, the new column "Satisfaction.Prob"
@@ -427,3 +462,59 @@ auc(roc)
 This high AUC value indicates that the model is fairly good at distinguishing
 between satisfied and dissatisfied passengers.
 
+## Comparison
+
+```{r}
+# Final model
+m6 <- glm(
+  satisfaction ~ Flight.Distance + poly(Age, 2) + Arrival.Delay.in.Minutes + Customer.Type + Type.of.Travel +
+    Class + Inflight.wifi.service + Cleanliness + Food.and.drink + Online.boarding + Seat.comfort +
+    Inflight.entertainment + On.board.service + Leg.room.service + Baggage.handling + Checkin.service,
+  data = train, family = binomial
+)
+
+summary(m6)
+
+marginalModelPlots(m6)
+residualPlots(m6)
+
+library(pROC)
+library(ggplot2)
+
+prob_pred1 <- predict(stepwise_model, newdata = test, type = "response")
+prob_pred2 <- predict(m6, newdata = test, type = "response")
+
+roc_model1 <- roc(test$satisfaction_binary, prob_pred1, quiet = TRUE)
+roc_model2 <- roc(test$satisfaction_binary, prob_pred2, quiet = TRUE)
+
+plot(roc_model1, col = "blue", lwd = 2, main = "ROC Curve Comparison", legacy.axes = TRUE)
+polygon(c(roc_model1$specificities, 0), c(roc_model1$sensitivities, 0), col = adjustcolor("blue", alpha.f = 0.2), border = NA)
+
+
+lines(roc_model2, col = "red", lwd = 2)
+polygon(c(roc_model2$specificities, 0), c(roc_model2$sensitivities, 0), col = adjustcolor("red", alpha.f = 0.2), border = NA)
+
+
+legend("bottomright",
+  legend = c("Model 1", "Model 2"),
+  col = c("blue", "red"), lwd = 2, fill = adjustcolor(c("blue", "red"), alpha.f = 0.2)
+)
+
+auc(roc_model1)
+auc(roc_model2)
+
+###
+library(PRROC)
+valid_indices <- !is.na(prob_pred)
+prob_pred <- prob_pred[valid_indices]
+test <- test[valid_indices, ] # Subset the test dataset
+
+test$satisfaction_binary <- ifelse(test$satisfaction == "satisfied", 1, 0)
+
+pr_curve <- pr.curve(scores.class0 = prob_pred, weights.class0 = test$satisfaction_binary, curve = TRUE)
+plot(pr_curve, main = "Precision-Recall Curve", col = "red", lwd = 1)
+```
+
+# Conclusion
+
+<!-- Interpret the results :) -->
