@@ -31,6 +31,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "images/")
 library(FactoMineR)
 library(cluster)
 library(missMDA)
+library(corrplot)
 ```
 
 # Data preparation
@@ -216,4 +217,120 @@ table(train$satisfaction)
 ```
 
 
+# Feature Selection
+```{r}
+numeric_vars <- sapply(train, is.numeric)
+summary(train[, numeric_vars])
+corr_matrix <- cor(train[, numeric_vars], use = "complete.obs")
+corrplot(corr_matrix)
 
+train1 <- train
+# CHI-TESTS(Testing independence between two Factors)
+variables_to_clean <- c(
+  "Gate.location", "Food.and.drink",
+  "Inflight.entertainment", "Seat.comfort",
+  "On.board.service", "Baggage.handling",
+  "Checkin.service", "Inflight.service", "Cleanliness"
+)
+
+for (var in variables_to_clean) {
+  train1 <- train1[train1[[var]] != "0", ]
+  train1[[var]] <- factor(train1[[var]])
+}
+
+categorical_vars <- c(
+  "Gender",
+  "Customer.Type", "Type.of.Travel", "Class",
+  "Inflight.wifi.service", "Departure.Arrival.time.convenient",
+  "Cleanliness", "Food.and.drink", "Online.boarding",
+  "Seat.comfort", "Inflight.entertainment", "On.board.service",
+  "Leg.room.service", "Baggage.handling", "Checkin.service"
+)
+
+for (var in categorical_vars) {
+  contingency_table <- table(train1[[var]], train1$satisfaction)
+  chi_test <- chisq.test(contingency_table)
+  cat("\nChi-Square Test for", var, "vs Satisfaction:\n")
+  print(chi_test)
+}
+```
+
+
+Regarding numerical varaibles, the correlation matrix shows that Age and Flight.
+Distance have a low positive correlation (0.1147), indicating minimal 
+association between the two variables. The Arrival.Delay.in.Minutes and
+Departure.Delay.in.Minutes are highly correlated (0.9676), suggesting a strong
+linear relationship between them.
+
+The Chi-Square tests show that categorical variables such as Customer.Type,
+Type.of.Travel, Class, Inflight.wifi.service, Cleanliness, Seat.comfort,
+Inflight.entertainment, On.board.service, Leg.room.service, Baggage.handling,
+and Checkin.service all have highly significant p-values (all < 2.2e-16),
+indicating a strong relationship with satisfaction. In contrast, Gender and
+Departure.Arrival.time.convenient have less impact, with p-values of 0.6884 and
+0.01553, respectively. These results suggest that the most important factors for
+modeling satisfaction are related to customer type, travel type, flight class,
+and the quality of services like inflight entertainment, wifi, cleanliness, and
+comfort during the flight. To perform the Chi-Square test, we had to eliminate
+the categories of the categorical variables that were empty.
+
+```{r}
+# NUMERIC VARIABLES
+m0 <- glm(satisfaction ~ 1, data = train, family = binomial)
+
+summary(m0)
+
+m1 <- glm(satisfaction ~ Flight.Distance, data = train, family = binomial)
+
+summary(m1)
+anova(m0, m1)
+
+m1 <- glm(satisfaction ~ Flight.Distance, data = train, family = binomial)
+
+summary(m1)
+anova(m0, m1)
+
+m2 <- glm(satisfaction ~ Flight.Distance + Age, data = train, family = binomial)
+
+summary(m2)
+anova(m1, m2)
+
+m3 <- glm(satisfaction ~ Flight.Distance + poly(Age, 2), data = train, family = binomial)
+
+summary(m3)
+anova(m2, m3)
+
+
+m4 <- glm(satisfaction ~ Flight.Distance + poly(Age, 2), data = train, family = binomial)
+
+summary(m4)
+anova(m3, m4)
+
+
+m5 <- glm(satisfaction ~ Flight.Distance + poly(Age, 2) + Arrival.Delay.in.Minutes, data = train, family = binomial)
+
+summary(m5)
+anova(m4, m5)
+Anova(m5)
+
+marginalModelPlots(m5)
+residualPlots(m5)
+```
+
+To assess the logistic regression model for the target variable "satisfaction,"
+we began with the null model, which included only the intercept, to evaluate the
+improvement achieved by adding new predictors. The null deviance of the model
+was 6812.3, with an AIC of 6814.3. The first predictor added was
+`Flight.Distance`, which significantly improved the model fit, reducing the
+deviance to 6355.9 and the AIC to 6359.9. The second numerical variable included
+was `Age`, which also led to a notable improvement. To capture non-linear
+effects of `Age`, we refined the model by introducing a second-order polynomial
+term for `Age`. Finally, we incorporated `Arrival.Delay.in.Minutes`, which
+further improved the model, reducing the deviance to 6042.3 and the AIC to 6052.3.
+
+To evaluate the improvement of the models, we used the ANOVA test. The results
+indicated that each addition of a predictor significantly improved the model, as
+evidenced by the reductions in deviance and corresponding p-values. In summary,
+the most critical improvements werethe addition of `Flight.Distance`, the
+refinement of `Age` using polynomial terms, and the inclusion of
+`Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests.
