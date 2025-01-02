@@ -334,3 +334,96 @@ evidenced by the reductions in deviance and corresponding p-values. In summary,
 the most critical improvements werethe addition of `Flight.Distance`, the
 refinement of `Age` using polynomial terms, and the inclusion of
 `Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests.
+
+# Model Validation
+
+Using the training dataset, we have built a logistic regression model to predict
+passenger satisfaction. Now, we will evaluate the model's performance using the
+testing dataset.
+
+Let's start by predicting the satisfaction levels for the testing dataset.
+
+```{r}
+test$Satisfaction.Prob <- predict(model, newdata = test, type = "response")
+```
+
+Due to the `type="response"` parameter, the new column "Satisfaction.Prob"
+contains the predicted probabilities of satisfaction for each passenger. To
+decide whether a passenger is satisfied or not, a threshold must be set. For
+example, let's set a threshold of 0.5.
+
+```{r}
+test$Predicted.Satisfaction <- ifelse(test$Satisfaction.Prob > 0.5, "satisfied", "neutral or dissatisfied")
+```
+
+And with that, a confusion matrix can be created to evaluate the model's
+performance.
+
+```{r}
+conf_matrix <- table(test$satisfaction, test$Predicted.Satisfaction)
+```
+
+To calculate the performance metrics, we start from the confusion matrix's elements:
+
+```{r}
+TP <- conf_matrix[2, 2]
+TN <- conf_matrix[1, 1]
+FP <- conf_matrix[1, 2]
+FN <- conf_matrix[2, 1]
+```
+
+We define "Accuracy" as the Correct Classification Rate:
+
+$$
+CCR = \frac{TP + TN}{TP + TN + FP + FN}
+$$
+
+```{r}
+(TP + TN) / sum(conf_matrix)
+```
+
+We define "Sensitivity" or "Recall" as the True Positive Rate:
+
+$$
+TPR = \frac{TP}{TP + FN}
+$$
+
+```{r}
+TP / (TP + FN)
+```
+
+And we define "Fall-out" as the False Positive Rate:
+
+$$
+FPR = \frac{FP}{FP + TN}
+$$
+
+```{r}
+FP / (FP + TN)
+```
+
+The process of designing a model and choosing a threshold consists of a careful
+trade-off between sensitivity and fall-out. If we plot these metrics against
+different thresholds, we can visualize this trade-off in what is known as a
+Receiver Operating Characteristic (ROC) curve:
+
+```{r}
+par(mfrow = c(1, 1))
+roc <- roc(test$satisfaction, test$Predicted.Satisfaction)
+# Set limits to 0..1
+plot(roc, main = "ROC Curve", col = "blue")
+```
+
+A model with perfect discrimination has an ROC curve that passes through the
+upper-left corner, whilst a model with no discrimination has an ROC curve that
+passes through the diagonal. Thus, the area under the ROC curve (AUC) is a
+good measure of the model's performance. The closer the AUC is to 1, the better
+the model is at distinguishing between satisfied and dissatisfied passengers.
+
+```{r}
+auc(roc)
+```
+
+This high AUC value indicates that the model is fairly good at distinguishing
+between satisfied and dissatisfied passengers.
+
