@@ -32,6 +32,9 @@ library(FactoMineR)
 library(cluster)
 library(missMDA)
 library(corrplot)
+library(pROC)
+library(ggplot2)
+library(PRROC)
 ```
 
 # Data preparation
@@ -762,8 +765,6 @@ summary(m6)
 marginalModelPlots(m6)
 residualPlots(m6)
 
-library(pROC)
-library(ggplot2)
 
 prob_pred1 <- predict(stepwise_model, newdata = test, type = "response")
 prob_pred2 <- predict(m6, newdata = test, type = "response")
@@ -788,7 +789,6 @@ auc(roc_model1)
 auc(roc_model2)
 
 ###
-library(PRROC)
 valid_indices <- !is.na(prob_pred)
 prob_pred <- prob_pred[valid_indices]
 test <- test[valid_indices, ] # Subset the test dataset
