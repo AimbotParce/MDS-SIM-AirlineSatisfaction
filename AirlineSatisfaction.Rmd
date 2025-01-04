@@ -18,9 +18,18 @@ editor_options:
 This project aims to predict airline passenger satisfaction levels by developing
 and analyzing binary regression models. Using a dataset containing customer
 demographics, flight details, and satisfaction ratings for various services, the
-project explores key factors influencing satisfaction. The workflow encompasses
-comprehensive data preparation, including cleaning, transformation, and
-profiling, followed by exploratory data analysis and model building.
+project explores key factors influencing satisfaction. 
+
+This work is organized as follows: [Section 1](#data-preparation) covers data
+preparation, including data transformation and cleaning. [Section 2](#eda)
+explores each variable in the dataset in detail, whilst [Section 3](#profiling)
+searches for relationships between variables and satisfaction levels. 
+[Section 4](#model-building), having studied the data, iteratively builds a
+logistic regression model to predict satisfaction. [Section 5](#model-validation)
+introduces the validation metrics used, and uses them to compare two of the best
+models selected on the previous section. Finally, [Section 6](#conclusion)
+gives a brief interpretation of the results.
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "images/")
@@ -37,7 +46,7 @@ library(ggplot2)
 library(PRROC)
 ```
 
-# Data preparation
+# 1. Data preparation {#data-preparation}
 
 Data preparation will be broken down into two main steps. The first step 
 involves transforming the data into a usable format, converting factors into 
@@ -220,7 +229,7 @@ table(train$satisfaction)
 colnames(train)
 ```
 
-# Exploratory Data Analysis
+# 2. Exploratory Data Analysis {#eda}
 
 ## Variable 1: Gender
 This is a Nominal variable with 2 levels (binary). It is visualized by a bar
@@ -468,7 +477,7 @@ summary(train$satisfaction)
 plot(train$satisfaction)
 ```
 
-# Profiling
+# 3. Profiling {#profiling}
 
 To analyze the categorical response variable satisfaction, the catdes function
 from the FactoMineR package was used. This function identifies the relationship
@@ -509,8 +518,7 @@ res.cat$quanti.var
 res.cat$quanti
 ```
 
-
-# Feature Selection
+# 4. Feature Selection & Model Building {#model-building}
 
 ```{r}
 numeric_vars <- sapply(train, is.numeric)
@@ -629,7 +637,7 @@ the most critical improvements werethe addition of `Flight.Distance`, the
 refinement of `Age` using polynomial terms, and the inclusion of
 `Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests.
 
-# Factor & Factor Interaction Variables
+## Factors & Interaction Terms
 
 ```{r}
 par(mfrow = c(1, 1))
@@ -657,7 +665,7 @@ vif(stepwise_model)
 vif(stepwise_model, type = "predictor")
 ```
 
-# Model Validation
+# 5. Model Validation {#model-validation}
 
 Using the training dataset, we have built a logistic regression model to predict
 passenger satisfaction. Now, we will evaluate the model's performance using the
@@ -799,6 +807,6 @@ pr_curve <- pr.curve(scores.class0 = prob_pred, weights.class0 = test$satisfacti
 plot(pr_curve, main = "Precision-Recall Curve", col = "red", lwd = 1)
 ```
 
-# Conclusion
+# 6. Conclusion {#conclusion}
 
 <!-- Interpret the results :) -->
