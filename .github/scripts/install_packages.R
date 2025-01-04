@@ -1,6 +1,6 @@
 required_packages <- c(
     "rmarkdown", "FactoMineR", "cluster", "missMDA",
-    "corrplot", "pROC", "ggplot2", "PRROC"
+    "corrplot", "pROC", "ggplot2", "PRROC", "car"
 ) # Add more packages as needed
 
 install_if_missing <- function(packages) {
