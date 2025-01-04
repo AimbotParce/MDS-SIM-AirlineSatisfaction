@@ -507,44 +507,48 @@ class.
 
 # 3. Profiling {#profiling}
 
-To analyze the categorical response variable satisfaction, the catdes function
-from the FactoMineR package was used. This function identifies the relationship
+To analyze the categorical response variable `satisfaction`, the `catdes` function
+from the `FactoMineR` package was used. This function identifies the relationship
 between the target variable and the other quantitative and qualitative variables.
-
-The chi-squared test results show that several qualitative variables are
-significantly associated with the satisfaction levels, as indicated by their
-extremely low p-values. The variables most strongly associated with satisfaction
-(in order of decreasing significance) are Online.boarding, Inflight.wifi.service,
-Class, Type.of.Travel and Inflight.entertainment. 
-
-For the quantitative variables, the Eta² values and p-values provide insight
-into their relationship with satisfaction. The most influential variables
-include Flight.Distance (passengers with longer flight distances tend to report
-higher satisfaction, as indicated by the positive mean in the satisfied category),
-Age (older passengers are more likely to report satisfaction, with a higher mean
-age in the satisfied category compared to neutral or dissatisfied),
-Arrival.Delay.in.Minutes and Departure.Delay.in.Minutes (both delays are
-negatively associated with satisfaction, as expected, though their impact is
-relatively small)
-
-Passengers categorized as satisfied have a significantly higher mean in
-Flight.Distance and Age compared to the overall averages.
-
-Passengers categorized as neutral or dissatisfied have lower mean
-Flight.Distance and Age. Both Departure.Delay.in.Minutes and
-Arrival.Delay.in.Minutes are slightly higher.
-
-The analysis reveals that satisfaction is most strongly influenced by
-qualitative variables such as Online.boarding, Inflight.wifi.service, and Class.
-Among quantitative variables, Flight.Distance and Age are the most significant
-predictors.
 
 ```{r}
 res.cat <- catdes(train, 23)
 res.cat$test.chi2
+```
+
+The chi-squared test results show that several qualitative variables are
+significantly associated with the satisfaction levels, as indicated by their
+extremely low p-values. The variables most strongly associated with satisfaction
+(in order of decreasing significance) are `Online.boarding`, `Inflight.wifi.service`,
+`Class`, `Type.of.Travel` and `Inflight.entertainment`.
+
+```{r}
 res.cat$quanti.var
 res.cat$quanti
 ```
+
+For the quantitative variables, the Eta² values and p-values provide insight
+into their relationship with `satisfaction`. The most influential variables
+include `Flight.Distance` (passengers with longer flight distances tend to report
+higher satisfaction, as indicated by the positive mean in the satisfied category),
+`Age` (older passengers are more likely to report satisfaction, with a higher mean
+age in the satisfied category compared to neutral or dissatisfied),
+`Arrival.Delay.in.Minutes` and `Departure.Delay.in.Minutes` (both delays are
+negatively associated with satisfaction, as expected, though their impact is
+relatively small)
+
+Passengers categorized as satisfied have a significantly higher mean in
+`Flight.Distance` and `Age` compared to the overall averages.
+
+Passengers categorized as neutral or dissatisfied have lower mean
+`Flight.Distance` and `Age`. Both `Departure.Delay.in.Minutes` and
+`Arrival.Delay.in.Minutes` are slightly higher.
+
+The analysis reveals that satisfaction is most strongly influenced by
+qualitative variables such as `Online.boarding`, `Inflight.wifi.service`, and `Class`.
+Among quantitative variables, `Flight.Distance` and `Age` are the most significant
+predictors.
+
 
 # 4. Feature Selection & Model Building {#model-building}
 
