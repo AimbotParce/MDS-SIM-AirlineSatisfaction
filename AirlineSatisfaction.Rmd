@@ -226,29 +226,46 @@ address this issue in later sections.
 
 ```{r}
 table(train$satisfaction)
-colnames(train)
 ```
 
 # 2. Exploratory Data Analysis {#eda}
 
+This section will give a small explanation of each variable in the dataset,
+including its type, levels, and distribution. We'll also provide visualizations
+to help understand the data better.
+
+```{r, include=FALSE}
+# Function to plot pie charts.
+piechart <- function(data) {
+  tbl <- as.data.frame(table(data))
+  print(tbl)
+  return(ggplot(tbl, aes(x = "", y = Freq, fill = data)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar("y", start = 0) +
+    theme_void() +
+    theme(legend.position = "none") +
+    geom_text(aes(label = paste0(data, "\n", round(Freq / sum(Freq) * 100, 2), "%")), position = position_stack(vjust = 0.5)))
+}
+```
+
 ## Variable 1: Gender
-This is a Nominal variable with 2 levels (binary). It is visualized by a bar
-plot, in which it is clear that all levels are well represented. 
+This is a Nominal variable with 2 levels (binary). A pie chart shows that the
+two levels are well represented.
 
 ```{r}
 summary(train$Gender)
-plot(train$Gender)
+piechart(train$Gender) # See code for the function definition.
 ```
 
 ## Variable 2: Customer.Type
-This is a Nominal variable with 2 levels (binary). It is visualized by a bar
-plot, which shows an imbalance between the two groups, with the loyal customers
-group being 4x larger than the disloyal customer group. Since the imbalance is
-not large enough to affect the model, no action is taken.
+This is a Nominal variable with 2 levels (binary). Another pie chart shows an
+imbalance between the two groups, with the loyal customers group being 4x larger
+than the disloyal customer group. Since the imbalance is not large enough to
+affect the model, no action is taken.
 
 ```{r}
 summary(train$Customer.Type)
-plot(train$Customer.Type)
+piechart(train$Customer.Type)
 ```
 
 ## Variable 3: Age
@@ -260,28 +277,29 @@ higher represented.
 
 ```{r}
 summary(train$Age)
-hist(train$Age, breaks = 30)
-boxplot(train$Age)
+hist(train$Age, breaks = 30, xlab = "Age", main = NULL)
+boxplot(train$Age, horizontal = TRUE, xlab = "Age")
 ```
 
 ## Variable 4: Type.of.Travel
-This is a Nominal variable with 2 levels (binary). It is visualized by a bar
-plot, in which it is clear that all levels are well represented, with Business
-travel having 2x the individuals than Personal travel.
+This is a Nominal variable with 2 levels (binary). Looking at a pie chart, it
+becomes clear that all levels are well represented, with Business travel having
+2x the individuals than Personal travel.
 
 ```{r}
 summary(train$Type.of.Travel)
-plot(train$Type.of.Travel)
+piechart(train$Type.of.Travel)
 ```
 
 ## Variable 5: Class
-This is a Nominal variable with 3 levels. It is visualized by a bar plot, in
-which one of the levels is underrepresented with only 7.23% of the observations.
-Since this is still a significant portion of the observations, no action is taken.
+This is a Nominal variable with 3 levels. When visualizing it on a pie chart, one
+can easily see that one of the levels is underrepresented with only 7.2% of the
+observations. Since this is still a significant portion of the observations, no
+action was taken.
 
 ```{r}
 summary(train$Class)
-plot(train$Class)
+piechart(train$Class)
 ```
 
 ## Variable 6: Flight.Distance
@@ -293,8 +311,8 @@ near-null p-value of the shapiro normallity test.
 
 ```{r}
 summary(train$Flight.Distance)
-hist(train$Flight.Distance, breaks = 30)
-boxplot(train$Flight.Distance)
+hist(train$Flight.Distance, breaks = 30, main = NULL, xlab = "Flight Distance")
+boxplot(train$Flight.Distance, horizontal = TRUE, xlab = "Flight Distance")
 shapiro.test(train$Flight.Distance)
 ```
 
@@ -305,7 +323,7 @@ all levels are well represented.
 
 ```{r}
 summary(train$Inflight.wifi.service)
-plot(train$Inflight.wifi.service)
+plot(train$Inflight.wifi.service, xlab = "Inflight wifi service satisfaction level")
 ```
 
 ##Variable 8: Departure.Arrival.time.convenient
@@ -314,7 +332,7 @@ in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Departure.Arrival.time.convenient)
-plot(train$Departure.Arrival.time.convenient)
+plot(train$Departure.Arrival.time.convenient, xlab = "Convinience of Departure and Arrival time satisfaction level")
 ```
 
 ## Variable 9: Ease.of.Online.booking
@@ -323,7 +341,7 @@ in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Ease.of.Online.booking)
-plot(train$Ease.of.Online.booking)
+plot(train$Ease.of.Online.booking, xlab = "Ease of Online booking satisfaction level")
 ```
 
 ## Variable 10: Gate.location
@@ -333,7 +351,7 @@ dataset contains observations at this level.
 
 ```{r}
 summary(train$Gate.location)
-plot(train$Gate.location)
+plot(train$Gate.location, xlab = "Gate location satisfaction level")
 ```
 
 ## Variable 11: Food.and.drink
@@ -343,7 +361,7 @@ not underrepresented in the test dataset.
 
 ```{r}
 summary(train$Food.and.drink)
-plot(train$Food.and.drink)
+plot(train$Food.and.drink, xlab = "Food and drink satisfaction level")
 ```
 
 ## Variable 12: Online.boarding
@@ -352,7 +370,7 @@ in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Online.boarding)
-plot(train$Online.boarding)
+plot(train$Online.boarding, xlab = "Online boarding satisfaction level")
 ```
 
 ## Variable 13: Seat.comfort
@@ -362,7 +380,7 @@ underrepresented in the test dataset.
 
 ```{r}
 summary(train$Seat.comfort)
-plot(train$Seat.comfort)
+plot(train$Seat.comfort, xlab = "Seat comfort satisfaction level")
 ```
 
 ## Variable 14: Inflight.entertainment
@@ -372,7 +390,7 @@ not underrepresented in the test dataset.
 
 ```{r}
 summary(train$Inflight.entertainment)
-plot(train$Inflight.entertainment)
+plot(train$Inflight.entertainment, xlab = "Inflight entertainment satisfaction level")
 ```
 
 ## Variable 15: On.board.service
@@ -382,7 +400,7 @@ not underrepresented in the test dataset.
 
 ```{r}
 summary(train$On.board.service)
-plot(train$On.board.service)
+plot(train$On.board.service, xlab = "On-board service satisfaction level")
 ```
 
 ## Variable 16: Leg.room.service
@@ -391,7 +409,7 @@ in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Leg.room.service)
-plot(train$Leg.room.service)
+plot(train$Leg.room.service, xlab = "Leg room service satisfaction level")
 ```
 
 ## Variable 17: Baggage.handling
@@ -401,7 +419,7 @@ represented in the test dataset.
 
 ```{r}
 summary(train$Baggage.handling)
-plot(train$Baggage.handling)
+plot(train$Baggage.handling, xlab = "Baggage handling satisfaction level")
 ```
 
 ## Variable 18: Checkin.service
@@ -411,7 +429,7 @@ represented in the test dataset.
 
 ```{r}
 summary(train$Checkin.service)
-plot(train$Checkin.service)
+plot(train$Checkin.service, xlab = "Check-in service satisfaction level")
 ```
 
 ## Variable 19: Inflight.service
@@ -421,7 +439,7 @@ not underrepresented in the test dataset.
 
 ```{r}
 summary(train$Inflight.service)
-plot(train$Inflight.service)
+plot(train$Inflight.service, xlab = "Inflight service satisfaction level")
 ```
 
 ## Variable 20: Cleanliness
@@ -431,7 +449,7 @@ represented in the test dataset.
 
 ```{r}
 summary(train$Cleanliness)
-plot(train$Cleanliness)
+plot(train$Cleanliness, xlab = "Cleanliness satisfaction level")
 ```
 
 ## Variable 21: Departure.Delay.in.Minutes
@@ -440,13 +458,15 @@ boxplot to examine its distribution. 56.70% of the observations have a delay of
 0 minutes, and the variable clearly doesn't follow a normal distribution,
 confirmed by a shapiro test. Due to its nature, it contains a lot of outliers
 (almost any observation that is not 0) so no action is taken to change/delete
-them since they represent a large percentage of the observations.
+them, not only because they represent a large percentage of the observations, 
+but also because, having some domain knowledge, high amounts of delay will 
+probably highly influence the satisfaction level - or lack thereof.
 
 ```{r}
 summary(train$Departure.Delay.in.Minutes)
 mean(train$Departure.Delay.in.Minutes == 0) * 100
-hist(train$Departure.Delay.in.Minutes, breaks = 30)
-boxplot(train$Departure.Delay.in.Minutes)
+hist(train$Departure.Delay.in.Minutes, breaks = 30, main = NULL, xlab = "Departure Delay (min)")
+boxplot(train$Departure.Delay.in.Minutes, horizontal = TRUE, xlab = "Departure Delay (min)")
 shapiro.test(train$Departure.Delay.in.Minutes)
 ```
 
@@ -454,69 +474,81 @@ shapiro.test(train$Departure.Delay.in.Minutes)
 This is a continuous ratio variable. It is visualized by a histogram and a
 boxplot to examine its distribution. Similarly to the last variable, 55.77%  of
 the observations have a delay of 0 minutes, and the variable clearly doesn't
-follow a normal distribution, confirmed by a shapiro test. Due to its nature, it
-contains a lot of outliers (almost any observation that is not 0) so no action
-is taken to change/delete them since they represent a large percentage of the
-observations.
+follow a normal distribution, confirmed by a shapiro test. Again, due to its 
+nature, it contains a lot of outliers, but no related action is taken.
+
+As explained before (in [section 1](#data-preparation)), as expected, this 
+variable is highly correlated with the Departure.Delay.in.Minutes variable.
 
 ```{r}
 summary(train$Arrival.Delay.in.Minutes)
 mean(train$Arrival.Delay.in.Minutes == 0) * 100
-hist(train$Arrival.Delay.in.Minutes, breaks = 30)
-boxplot(train$Arrival.Delay.in.Minutes)
+hist(train$Arrival.Delay.in.Minutes, breaks = 30, main = NULL, xlab = "Arrival Delay (min)")
+boxplot(train$Arrival.Delay.in.Minutes, horizontal = TRUE, xlab = "Arrival Delay (min)")
 shapiro.test(train$Arrival.Delay.in.Minutes)
 ```
 
 ## Variable 23: Satisfaction
 This is our response variable. It is a Nominal variable with 2 levels (binary).
 It is visualized by a bar plot, in which it is clear that all levels are well
-represented.
+represented, although a slight imbalance is present, not high enough to significantly
+affect the resulting model.
 
 ```{r}
 summary(train$satisfaction)
-plot(train$satisfaction)
+piechart(train$satisfaction)
 ```
+
+A higher imbalance could affect the model's performance, which could be counteracted
+by using techniques such as oversampling (duplicating some observation from the
+minority class), undersampling (removing some observations from the majority class),
+or, in the fitting process, using higher weights for the "losses" of the minority
+class.
 
 # 3. Profiling {#profiling}
 
-To analyze the categorical response variable satisfaction, the catdes function
-from the FactoMineR package was used. This function identifies the relationship
+To analyze the categorical response variable `satisfaction`, the `catdes` function
+from the `FactoMineR` package was used. This function identifies the relationship
 between the target variable and the other quantitative and qualitative variables.
-
-The chi-squared test results show that several qualitative variables are
-significantly associated with the satisfaction levels, as indicated by their
-extremely low p-values. The variables most strongly associated with satisfaction
-(in order of decreasing significance) are Online.boarding, Inflight.wifi.service,
-Class, Type.of.Travel and Inflight.entertainment. 
-
-For the quantitative variables, the Eta² values and p-values provide insight
-into their relationship with satisfaction. The most influential variables
-include Flight.Distance (passengers with longer flight distances tend to report
-higher satisfaction, as indicated by the positive mean in the satisfied category),
-Age (older passengers are more likely to report satisfaction, with a higher mean
-age in the satisfied category compared to neutral or dissatisfied),
-Arrival.Delay.in.Minutes and Departure.Delay.in.Minutes (both delays are
-negatively associated with satisfaction, as expected, though their impact is
-relatively small)
-
-Passengers categorized as satisfied have a significantly higher mean in
-Flight.Distance and Age compared to the overall averages.
-
-Passengers categorized as neutral or dissatisfied have lower mean
-Flight.Distance and Age. Both Departure.Delay.in.Minutes and
-Arrival.Delay.in.Minutes are slightly higher.
-
-The analysis reveals that satisfaction is most strongly influenced by
-qualitative variables such as Online.boarding, Inflight.wifi.service, and Class.
-Among quantitative variables, Flight.Distance and Age are the most significant
-predictors.
 
 ```{r}
 res.cat <- catdes(train, 23)
 res.cat$test.chi2
+```
+
+The chi-squared test results show that several qualitative variables are
+significantly associated with the satisfaction levels, as indicated by their
+extremely low p-values. The variables most strongly associated with satisfaction
+(in order of decreasing significance) are `Online.boarding`, `Inflight.wifi.service`,
+`Class`, `Type.of.Travel` and `Inflight.entertainment`.
+
+```{r}
 res.cat$quanti.var
 res.cat$quanti
 ```
+
+For the quantitative variables, the Eta² values and p-values provide insight
+into their relationship with `satisfaction`. The most influential variables
+include `Flight.Distance` (passengers with longer flight distances tend to report
+higher satisfaction, as indicated by the positive mean in the satisfied category),
+`Age` (older passengers are more likely to report satisfaction, with a higher mean
+age in the satisfied category compared to neutral or dissatisfied),
+`Arrival.Delay.in.Minutes` and `Departure.Delay.in.Minutes` (both delays are
+negatively associated with satisfaction, as expected, though their impact is
+relatively small)
+
+Passengers categorized as satisfied have a significantly higher mean in
+`Flight.Distance` and `Age` compared to the overall averages.
+
+Passengers categorized as neutral or dissatisfied have lower mean
+`Flight.Distance` and `Age`. Both `Departure.Delay.in.Minutes` and
+`Arrival.Delay.in.Minutes` are slightly higher.
+
+The analysis reveals that satisfaction is most strongly influenced by
+qualitative variables such as `Online.boarding`, `Inflight.wifi.service`, and `Class`.
+Among quantitative variables, `Flight.Distance` and `Age` are the most significant
+predictors.
+
 
 # 4. Feature Selection & Model Building {#model-building}
 
