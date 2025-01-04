@@ -698,6 +698,29 @@ vif(stepwise_model)
 vif(stepwise_model, type = "predictor")
 ```
 
+Seeing what the `step` function returned, let's compare it to a model that
+solely includes the variables that seem to have the most significant impact on
+satisfaction.
+
+```{r}
+simpler_model <- glm(
+  satisfaction ~ Flight.Distance + poly(Age, 2) + Arrival.Delay.in.Minutes + Customer.Type + Type.of.Travel +
+    Class + Inflight.wifi.service + Cleanliness + Food.and.drink + Online.boarding + Seat.comfort +
+    Inflight.entertainment + On.board.service + Leg.room.service + Baggage.handling + Checkin.service,
+  data = train, family = binomial
+)
+
+summary(m6)
+
+marginalModelPlots(m6)
+residualPlots(m6)
+```
+
+As we can see, although this model does perform slightly worse than the one
+obtained through the stepwise method, it is much simpler and easier to interpret.
+In the following section, we will do a more thorough comparison between the two.
+
+
 # 5. Model Validation {#model-validation}
 
 Using the training dataset, we have built a logistic regression model to predict
@@ -707,7 +730,7 @@ testing dataset.
 Let's start by predicting the satisfaction levels for the testing dataset.
 
 ```{r}
-test$Satisfaction.Prob <- predict(stepwise_model, newdata = test, type = "response")
+Satisfaction.Prob <- predict(stepwise_model, newdata = test, type = "response")
 ```
 
 Due to the `type="response"` parameter, the new column "Satisfaction.Prob"
@@ -716,14 +739,14 @@ decide whether a passenger is satisfied or not, a threshold must be set. For
 example, let's set a threshold of 0.5.
 
 ```{r}
-test$Predicted.Satisfaction <- ifelse(test$Satisfaction.Prob > 0.5, "satisfied", "neutral or dissatisfied")
+Predicted.Satisfaction <- ifelse(Satisfaction.Prob > 0.5, "satisfied", "neutral or dissatisfied")
 ```
 
 And with that, a confusion matrix can be created to evaluate the model's
 performance.
 
 ```{r}
-conf_matrix <- table(test$satisfaction, test$Predicted.Satisfaction)
+conf_matrix <- table(test$satisfaction, Predicted.Satisfaction)
 ```
 
 To calculate the performance metrics, we start from the confusion matrix's elements:
@@ -772,9 +795,9 @@ Receiver Operating Characteristic (ROC) curve:
 
 ```{r}
 par(mfrow = c(1, 1))
-roc <- roc(test$satisfaction, test$Predicted.Satisfaction)
-# Set limits to 0..1
+roc <- roc(test$satisfaction, Satisfaction.Prob, quiet = TRUE)
 plot(roc, main = "ROC Curve", col = "blue")
+polygon(c(roc$specificities, 0), c(roc$sensitivities, 0), col = adjustcolor("blue", alpha.f = 0.2), border = NA)
 ```
 
 A model with perfect discrimination has an ROC curve that passes through the
@@ -790,55 +813,116 @@ auc(roc)
 This high AUC value indicates that the model is fairly good at distinguishing
 between satisfied and dissatisfied passengers.
 
-## Comparison
+## Which model should we choose?
+
+In the previous section, we arrived at two models: `stepwise_model`, which was 
+constructed by minimizing the Akaike Information Criterion (AIC) using the 
+`step` function, and `simpler_model`, which was a manually constructed model
+based On the most significant variables of the former.
+
+The following code executes a prediction on the testing dataset for the latter 
+model, and computes the ROC curve.
 
 ```{r}
-# Final model
-m6 <- glm(
-  satisfaction ~ Flight.Distance + poly(Age, 2) + Arrival.Delay.in.Minutes + Customer.Type + Type.of.Travel +
-    Class + Inflight.wifi.service + Cleanliness + Food.and.drink + Online.boarding + Seat.comfort +
-    Inflight.entertainment + On.board.service + Leg.room.service + Baggage.handling + Checkin.service,
-  data = train, family = binomial
-)
-
-summary(m6)
-
-marginalModelPlots(m6)
-residualPlots(m6)
-
-
-prob_pred1 <- predict(stepwise_model, newdata = test, type = "response")
-prob_pred2 <- predict(m6, newdata = test, type = "response")
-
-roc_model1 <- roc(test$satisfaction_binary, prob_pred1, quiet = TRUE)
-roc_model2 <- roc(test$satisfaction_binary, prob_pred2, quiet = TRUE)
-
-plot(roc_model1, col = "blue", lwd = 2, main = "ROC Curve Comparison", legacy.axes = TRUE)
-polygon(c(roc_model1$specificities, 0), c(roc_model1$sensitivities, 0), col = adjustcolor("blue", alpha.f = 0.2), border = NA)
-
-
-lines(roc_model2, col = "red", lwd = 2)
-polygon(c(roc_model2$specificities, 0), c(roc_model2$sensitivities, 0), col = adjustcolor("red", alpha.f = 0.2), border = NA)
-
-
-legend("bottomright",
-  legend = c("Model 1", "Model 2"),
+Satisfaction.Prob.Simpler <- predict(simpler_model, newdata = test, type = "response")
+roc.Simpler <- roc(test$satisfaction, Satisfaction.Prob.Simpler, quiet = TRUE)
+plot(roc.Simpler, col = "red", main = "ROC Curves")
+polygon(c(roc.Simpler$specificities, 0), c(roc.Simpler$sensitivities, 0), col = adjustcolor("red", alpha.f = 0.2), border = NA)
+lines(roc, col = "blue", lwd = 2)
+polygon(c(roc$specificities, 0), c(roc$sensitivities, 0), col = adjustcolor("blue", alpha.f = 0.2), border = NA)
+legend(
+  "bottomright",
+  legend = c("Stepwise Model", "Simpler Model"),
   col = c("blue", "red"), lwd = 2, fill = adjustcolor(c("blue", "red"), alpha.f = 0.2)
 )
-
-auc(roc_model1)
-auc(roc_model2)
-
-###
-valid_indices <- !is.na(prob_pred)
-prob_pred <- prob_pred[valid_indices]
-test <- test[valid_indices, ] # Subset the test dataset
-
-test$satisfaction_binary <- ifelse(test$satisfaction == "satisfied", 1, 0)
-
-pr_curve <- pr.curve(scores.class0 = prob_pred, weights.class0 = test$satisfaction_binary, curve = TRUE)
-plot(pr_curve, main = "Precision-Recall Curve", col = "red", lwd = 1)
 ```
+
+When comparing the two curves, we can see that ....
+
+<!-- I cannot run the stepwise model!!!! I cannot compare the two curves -->
+
+And looking at the areas under the ROC curves, it becomes clear that, indeed,
+the stepwise model is slightly better, but it's complexity might not be worth
+the small improvement in performance, according to the AUC criterion.
+
+```{r}
+print(paste("Area under the stepwise curve:", auc(roc)))
+print(paste("Area under the simpler curve:", auc(roc.Simpler)))
+```
+
+To further compare them, let's first choose a suitable threshold for both of them.
+We'll choose the threshold that maximizes the F1 score, which is the harmonic
+mean of precision and recall, computed as follows:
+
+$$
+F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+$$
+
+```{r}
+f1_computer <- function(expected, probs) {
+  return(function(threshold) {
+    pred <- factor(
+      ifelse(probs > threshold, "satisfied", "neutral or dissatisfied"),
+      levels = c("satisfied", "neutral or dissatisfied")
+    )
+    conf <- table(expected, pred)
+    TP <- conf["satisfied", "satisfied"]
+    FP <- conf["neutral or dissatisfied", "satisfied"]
+    FN <- conf["satisfied", "neutral or dissatisfied"]
+    precision <- TP / (TP + FP)
+    recall <- TP / (TP + FN)
+    return(2 * precision * recall / (precision + recall + 1e-10)) # Avoid division by zero
+  })
+}
+
+thresholds <- seq(0, 1, 0.01)
+stepwise_f1 <- sapply(thresholds, f1_computer(test$satisfaction, Satisfaction.Prob))
+simpler_f1 <- sapply(thresholds, f1_computer(test$satisfaction, Satisfaction.Prob.Simpler))
+
+plot(thresholds, stepwise_f1, type = "l", col = "blue", xlab = "Threshold", ylab = "F1 Score", main = "F1 Score vs Threshold")
+lines(thresholds, simpler_f1, col = "red")
+legend("topright", legend = c("Stepwise Model", "Simpler Model"), col = c("blue", "red"), lwd = 2)
+```
+
+The thresholds are:
+
+```{r}
+stepwise_threshold <- thresholds[which.max(stepwise_f1)]
+simpler_threshold <- thresholds[which.max(simpler_f1)]
+print(paste("Stepwise Model Threshold:", stepwise_threshold))
+print(paste("Simpler Model Threshold:", simpler_threshold))
+```
+
+Now, using them, here's their confusion matrices:
+
+```{r}
+stepwise_pred <- factor(
+  ifelse(Satisfaction.Prob > stepwise_threshold, "satisfied", "neutral or dissatisfied"),
+  levels = c("satisfied", "neutral or dissatisfied")
+)
+simpler_pred <- factor(
+  ifelse(Satisfaction.Prob.Simpler > simpler_threshold, "satisfied", "neutral or dissatisfied"),
+  levels = c("satisfied", "neutral or dissatisfied")
+)
+
+stepwise_conf_matrix <- table(test$satisfaction, stepwise_pred)
+stepwise_conf_matrix
+simpler_conf_matrix <- table(test$satisfaction, simpler_pred)
+simpler_conf_matrix
+```
+
+And their accuracies:
+
+```{r}
+stepwise_accuracy <- sum(diag(stepwise_conf_matrix)) / sum(stepwise_conf_matrix)
+stepwise_accuracy
+simpler_accuracy <- sum(diag(simpler_conf_matrix)) / sum(simpler_conf_matrix)
+simpler_accuracy
+```
+
+As we can see...
+<!-- Comment on which model has the highest threshold, and the highest accuracy -->
+
 
 # 6. Conclusion {#conclusion}
 
