@@ -220,7 +220,8 @@ colnames(train)
 # Exploratory Data Analysis
 
 ## Variable 1: Gender
-This is a Nominal variable with 2 levels (binary). It is visualized by a bar plot, in which it is clear that all levels are well represented. 
+This is a Nominal variable with 2 levels (binary). It is visualized by a bar
+plot, in which it is clear that all levels are well represented. 
 
 ```{r}
 summary(train$Gender)
@@ -228,7 +229,10 @@ plot(train$Gender)
 ```
 
 ## Variable 2: Customer.Type
-This is a Nominal variable with 2 levels (binary). It is visualized by a bar plot, which shows an imbalance between the two groups, with the loyal customers group being 4x larger than the disloyal customer group. Since the imbalance is not large enough to affect the model, no action is taken.
+This is a Nominal variable with 2 levels (binary). It is visualized by a bar
+plot, which shows an imbalance between the two groups, with the loyal customers
+group being 4x larger than the disloyal customer group. Since the imbalance is
+not large enough to affect the model, no action is taken.
 
 ```{r}
 summary(train$Customer.Type)
@@ -236,7 +240,11 @@ plot(train$Customer.Type)
 ```
 
 ## Variable 3: Age
-This is a Numeric interval variable. It is visualized by a histogram and a boxplot to examine its distribution, which appears to be well represented for people of all ages, with no outliers. Visually, a slight deviation from a normal distribution (centered at age 40) is seen at the ages 20-30, being slightly higher represented. 
+This is a Numeric interval variable. It is visualized by a histogram and a
+boxplot to examine its distribution, which appears to be well represented for
+people of all ages, with no outliers. Visually, a slight deviation from a normal
+distribution (centered at age 40) is seen at the ages 20-30, being slightly
+higher represented. 
 
 ```{r}
 summary(train$Age)
@@ -245,7 +253,9 @@ boxplot(train$Age)
 ```
 
 ## Variable 4: Type.of.Travel
-This is a Nominal variable with 2 levels (binary). It is visualized by a bar plot, in which it is clear that all levels are well represented, with Business travel having 2x the individuals than Personal travel.
+This is a Nominal variable with 2 levels (binary). It is visualized by a bar
+plot, in which it is clear that all levels are well represented, with Business
+travel having 2x the individuals than Personal travel.
 
 ```{r}
 summary(train$Type.of.Travel)
@@ -253,7 +263,9 @@ plot(train$Type.of.Travel)
 ```
 
 ## Variable 5: Class
-This is a Nominal variable with 3 levels. It is visualized by a bar plot, in which one of the levels is underrepresented with only 7.23% of the observations. Since this is still a significant portion of the observations, no action is taken.
+This is a Nominal variable with 3 levels. It is visualized by a bar plot, in
+which one of the levels is underrepresented with only 7.23% of the observations.
+Since this is still a significant portion of the observations, no action is taken.
 
 ```{r}
 summary(train$Class)
@@ -261,7 +273,11 @@ plot(train$Class)
 ```
 
 ## Variable 6: Flight.Distance
-This is a continuous ratio variable. It is visualized by a histogram and a boxplot to examine its distribution. A few univariate outliers are detected, but they are not so far from the interquartile range to consider changing or deleting them. It is clearly not normally distributed, confirmed by the near-null p-value of the shapiro normallity test.
+This is a continuous ratio variable. It is visualized by a histogram and a
+boxplot to examine its distribution. A few univariate outliers are detected, but
+they are not so far from the interquartile range to consider changing or
+deleting them. It is clearly not normally distributed, confirmed by the
+near-null p-value of the shapiro normallity test.
 
 ```{r}
 summary(train$Flight.Distance)
@@ -271,7 +287,9 @@ shapiro.test(train$Flight.Distance)
 ```
 
 ## Variable 7: Inflight.wifi.service
-This is the first of many Nominal variables with 6 levels (0 to 5, customer satisfaction level). It is visualized by a bar plot, in which it is clear that all levels are well represented.
+This is the first of many Nominal variables with 6 levels (0 to 5, customer
+satisfaction level). It is visualized by a bar plot, in which it is clear that
+all levels are well represented.
 
 ```{r}
 summary(train$Inflight.wifi.service)
@@ -279,7 +297,8 @@ plot(train$Inflight.wifi.service)
 ```
 
 ##Variable 8: Departure.Arrival.time.convenient
-This is another Nominal variable with 6 levels. It is visualized by a bar plot, in which it is clear that all levels are well represented.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot,
+in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Departure.Arrival.time.convenient)
@@ -287,7 +306,8 @@ plot(train$Departure.Arrival.time.convenient)
 ```
 
 ## Variable 9: Ease.of.Online.booking
-This is another Nominal variable with 6 levels. It is visualized by a bar plot, in which it is clear that all levels are well represented.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot,
+in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Ease.of.Online.booking)
@@ -295,7 +315,9 @@ plot(train$Ease.of.Online.booking)
 ```
 
 ## Variable 10: Gate.location
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. One of the levels is not represented at all, but is not deleted in case the test dataset contains observations at this level.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+One of the levels is not represented at all, but is not deleted in case the test
+dataset contains observations at this level.
 
 ```{r}
 summary(train$Gate.location)
@@ -303,7 +325,9 @@ plot(train$Gate.location)
 ```
 
 ## Variable 11: Food.and.drink
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is very underrepresented, but as before is not deleted in case it is not underrepresented in the test dataset.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is very underrepresented, but as before is not deleted in case it is
+not underrepresented in the test dataset.
 
 ```{r}
 summary(train$Food.and.drink)
@@ -311,7 +335,8 @@ plot(train$Food.and.drink)
 ```
 
 ## Variable 12: Online.boarding
-This is another Nominal variable with 6 levels. It is visualized by a bar plot, in which it is clear that all levels are well represented.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot,
+in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Online.boarding)
@@ -319,7 +344,9 @@ plot(train$Online.boarding)
 ```
 
 ## Variable 13: Seat.comfort
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is not represented, but as before is not deleted in case it is not underrepresented in the test dataset.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is not represented, but as before is not deleted in case it is not
+underrepresented in the test dataset.
 
 ```{r}
 summary(train$Seat.comfort)
@@ -327,7 +354,9 @@ plot(train$Seat.comfort)
 ```
 
 ## Variable 14: Inflight.entertainment
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is very underrepresented, but as before is not deleted in case it is not underrepresented in the test dataset.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is very underrepresented, but as before is not deleted in case it is
+not underrepresented in the test dataset.
 
 ```{r}
 summary(train$Inflight.entertainment)
@@ -335,7 +364,9 @@ plot(train$Inflight.entertainment)
 ```
 
 ## Variable 15: On.board.service
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is very underrepresented, but as before is not deleted in case it is not underrepresented in the test dataset.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is very underrepresented, but as before is not deleted in case it is
+not underrepresented in the test dataset.
 
 ```{r}
 summary(train$On.board.service)
@@ -343,7 +374,8 @@ plot(train$On.board.service)
 ```
 
 ## Variable 16: Leg.room.service
-This is another Nominal variable with 6 levels. It is visualized by a bar plot, in which it is clear that all levels are well represented.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot,
+in which it is clear that all levels are well represented.
 
 ```{r}
 summary(train$Leg.room.service)
@@ -351,7 +383,9 @@ plot(train$Leg.room.service)
 ```
 
 ## Variable 17: Baggage.handling
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is not represented, but as before is not deleted in case it is represented in the test dataset. 
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is not represented, but as before is not deleted in case it is
+represented in the test dataset. 
 
 ```{r}
 summary(train$Baggage.handling)
@@ -359,7 +393,9 @@ plot(train$Baggage.handling)
 ```
 
 ## Variable 18: Checkin.service
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is not represented, but as before is not deleted in case it is represented in the test dataset. 
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is not represented, but as before is not deleted in case it is
+represented in the test dataset. 
 
 ```{r}
 summary(train$Checkin.service)
@@ -367,7 +403,9 @@ plot(train$Checkin.service)
 ```
 
 ## Variable 19: Inflight.service
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is very underrepresented, but as before is not deleted in case it is not underrepresented in the test dataset.
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is very underrepresented, but as before is not deleted in case it is
+not underrepresented in the test dataset.
 
 ```{r}
 summary(train$Inflight.service)
@@ -375,7 +413,9 @@ plot(train$Inflight.service)
 ```
 
 ## Variable 20: Cleanliness
-This is another Nominal variable with 6 levels. It is visualized by a bar plot. The 0 level is not represented, but as before is not deleted in case it is represented in the test dataset. 
+This is another Nominal variable with 6 levels. It is visualized by a bar plot.
+The 0 level is not represented, but as before is not deleted in case it is
+represented in the test dataset. 
 
 ```{r}
 summary(train$Cleanliness)
@@ -383,7 +423,12 @@ plot(train$Cleanliness)
 ```
 
 ## Variable 21: Departure.Delay.in.Minutes
-This is a continuous ratio variable. It is visualized by a histogram and a boxplot to examine its distribution. 56.70% of the observations have a delay of 0 minutes, and the variable clearly doesn't follow a normal distribution, confirmed by a shapiro test. Due to its nature, it contains a lot of outliers (almost any observation that is not 0) so no action is taken to change/delete them since they represent a large percentage of the observations.
+This is a continuous ratio variable. It is visualized by a histogram and a
+boxplot to examine its distribution. 56.70% of the observations have a delay of
+0 minutes, and the variable clearly doesn't follow a normal distribution,
+confirmed by a shapiro test. Due to its nature, it contains a lot of outliers
+(almost any observation that is not 0) so no action is taken to change/delete
+them since they represent a large percentage of the observations.
 
 ```{r}
 summary(train$Departure.Delay.in.Minutes)
@@ -394,7 +439,13 @@ shapiro.test(train$Departure.Delay.in.Minutes)
 ```
 
 ## Variable 22: Arrival.Delay.in.Minutes
-This is a continuous ratio variable. It is visualized by a histogram and a boxplot to examine its distribution. Similarly to the last variable, 55.77%  of the observations have a delay of 0 minutes, and the variable clearly doesn't follow a normal distribution, confirmed by a shapiro test. Due to its nature, it contains a lot of outliers (almost any observation that is not 0) so no action is taken to change/delete them since they represent a large percentage of the observations.
+This is a continuous ratio variable. It is visualized by a histogram and a
+boxplot to examine its distribution. Similarly to the last variable, 55.77%  of
+the observations have a delay of 0 minutes, and the variable clearly doesn't
+follow a normal distribution, confirmed by a shapiro test. Due to its nature, it
+contains a lot of outliers (almost any observation that is not 0) so no action
+is taken to change/delete them since they represent a large percentage of the
+observations.
 
 ```{r}
 summary(train$Arrival.Delay.in.Minutes)
@@ -405,7 +456,9 @@ shapiro.test(train$Arrival.Delay.in.Minutes)
 ```
 
 ## Variable 23: Satisfaction
-This is our response variable. It is a Nominal variable with 2 levels (binary). It is visualized by a bar plot, in which it is clear that all levels are well represented.
+This is our response variable. It is a Nominal variable with 2 levels (binary).
+It is visualized by a bar plot, in which it is clear that all levels are well
+represented.
 
 ```{r}
 summary(train$satisfaction)
@@ -414,20 +467,40 @@ plot(train$satisfaction)
 
 # Profiling
 
-To analyze the categorical response variable satisfaction, the catdes function from the FactoMineR package was used. This function identifies the relationship between the target variable and the other quantitative and qualitative variables.
+To analyze the categorical response variable satisfaction, the catdes function
+from the FactoMineR package was used. This function identifies the relationship
+between the target variable and the other quantitative and qualitative variables.
 
-The chi-squared test results show that several qualitative variables are significantly associated with the satisfaction levels, as indicated by their extremely low p-values. The variables most strongly associated with satisfaction (in order of decreasing significance) are Online.boarding, Inflight.wifi.service, Class, Type.of.Travel and Inflight.entertainment. 
+The chi-squared test results show that several qualitative variables are
+significantly associated with the satisfaction levels, as indicated by their
+extremely low p-values. The variables most strongly associated with satisfaction
+(in order of decreasing significance) are Online.boarding, Inflight.wifi.service,
+Class, Type.of.Travel and Inflight.entertainment. 
 
-For the quantitative variables, the Eta² values and p-values provide insight into their relationship with satisfaction. The most influential variables include Flight.Distance (passengers with longer flight distances tend to report higher satisfaction, as indicated by the positive mean in the satisfied category), Age (older passengers are more likely to report satisfaction, with a higher mean age in the satisfied category compared to neutral or dissatisfied), Arrival.Delay.in.Minutes and Departure.Delay.in.Minutes (both delays are negatively associated with satisfaction, as expected, though their impact is relatively small)
+For the quantitative variables, the Eta² values and p-values provide insight
+into their relationship with satisfaction. The most influential variables
+include Flight.Distance (passengers with longer flight distances tend to report
+higher satisfaction, as indicated by the positive mean in the satisfied category),
+Age (older passengers are more likely to report satisfaction, with a higher mean
+age in the satisfied category compared to neutral or dissatisfied),
+Arrival.Delay.in.Minutes and Departure.Delay.in.Minutes (both delays are
+negatively associated with satisfaction, as expected, though their impact is
+relatively small)
 
-Passengers categorized as satisfied have a significantly higher mean in Flight.Distance and Age compared to the overall averages.
+Passengers categorized as satisfied have a significantly higher mean in
+Flight.Distance and Age compared to the overall averages.
 
-Passengers categorized as neutral or dissatisfied have lower mean Flight.Distance and Age. Both Departure.Delay.in.Minutes and Arrival.Delay.in.Minutes are slightly higher.
+Passengers categorized as neutral or dissatisfied have lower mean
+Flight.Distance and Age. Both Departure.Delay.in.Minutes and
+Arrival.Delay.in.Minutes are slightly higher.
 
-The analysis reveals that satisfaction is most strongly influenced by qualitative variables such as Online.boarding, Inflight.wifi.service, and Class. Among quantitative variables, Flight.Distance and Age are the most significant predictors.
+The analysis reveals that satisfaction is most strongly influenced by
+qualitative variables such as Online.boarding, Inflight.wifi.service, and Class.
+Among quantitative variables, Flight.Distance and Age are the most significant
+predictors.
 
 ```{r}
-res.cat = catdes(train, 23)
+res.cat <- catdes(train, 23)
 res.cat$test.chi2
 res.cat$quanti.var
 res.cat$quanti
