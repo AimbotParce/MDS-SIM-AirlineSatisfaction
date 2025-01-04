@@ -557,7 +557,7 @@ for (var in categorical_vars) {
 }
 ```
 
-Regarding numerical varaibles, the correlation matrix shows that Age and Flight.
+Regarding numerical variables, the correlation matrix shows that Age and Flight.
 Distance have a low positive correlation (0.1147), indicating minimal 
 association between the two variables. The Arrival.Delay.in.Minutes and
 Departure.Delay.in.Minutes are highly correlated (0.9676), suggesting a strong
