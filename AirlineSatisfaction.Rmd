@@ -671,7 +671,7 @@ refinement of `Age` using polynomial terms, and the inclusion of
 `Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests. No significant interaction terms were identified inj the anova test, thus they are not included in the model of numeric variables.
 
 # Factor & Factor Interaction Variables
-In this section, we apply the stepwise selection method to find a suitable logistic regression model. We start with an initial model that includes the previous model with the numerical variables and all the factors. Then, the step function iteratively evaluates models by adding or removing predictors to minimize the Akaike Information Criterion (AIC). Following this, we perform residual analysis to assess the model's goodness-of-fit.
+In this section, we apply the stepwise selection method to find a suitable logistic regression model. We start with an initial model that includes the previous model with the numerical variables and all the factors. Then, the step function iteratively evaluates models by adding or removing predictors to minimize the Akaike Information Criterion (AIC). Following this, we perform residual analysis to assess the model's goodness-of-fit. The result is a simple model we will use later to comper with a model including interactions.
 
 ```{r}
 par(mfrow = c(1, 1))
@@ -685,7 +685,7 @@ initial_model <- glm(
   data = train, family = binomial
 )
 
-stepwise_model <- step(initial_model, direction = "both", trace = 1)
+simpler_model <- step(initial_model, direction = "both", trace = 1)
 
 #Step:  AIC=1922.22
 #satisfaction ~ Customer.Type + poly(Age, 2) + Type.of.Travel + 
@@ -695,12 +695,12 @@ stepwise_model <- step(initial_model, direction = "both", trace = 1)
 #    Checkin.service + Inflight.service + Cleanliness
 
 # RESIDUAL ANALYSIS OF THE STEP MODEL
-marginalModelPlots(stepwise_model)
-residualPlots(stepwise_model)
+marginalModelPlots(simpler_model)
+residualPlots(simpler_model)
 
-coef(stepwise_model)
-Anova(stepwise_model, test = "LR")
-AIC(stepwise_model)
+coef(simpler_model)
+Anova(simpler_model, test = "LR")
+AIC(simpler_model)
 ```
 
 Next, we explore interaction terms between predictors. Starting with a base model that includes all significant predictors identified from the stepwise selection, we systematically examine potential interactions. This code is commented out due to the high computational cost and time it takes to execute.Each pair of predictors is tested by fitting a model that includes their interaction term and comparing it to the base model using an ANOVA test. Interaction terms that significantly improve model fit (p-value < 0.05) are added to the model.
