@@ -668,24 +668,31 @@ indicated that each addition of a predictor significantly improved the model, as
 evidenced by the reductions in deviance and corresponding p-values. In summary,
 the most critical improvements werethe addition of `Flight.Distance`, the
 refinement of `Age` using polynomial terms, and the inclusion of
-`Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests.
+`Arrival.Delay.in.Minutes`, all of which were confirmed by the ANOVA tests. No significant interaction terms were identified inj the anova test, thus they are not included in the model of numeric variables.
 
-## Factors & Interaction Terms
+# Factor & Factor Interaction Variables
+In this section, we apply the stepwise selection method to find a suitable logistic regression model. We start with an initial model that includes the previous model with the numerical variables and all the factors. Then, the step function iteratively evaluates models by adding or removing predictors to minimize the Akaike Information Criterion (AIC). Following this, we perform residual analysis to assess the model's goodness-of-fit.
 
 ```{r}
 par(mfrow = c(1, 1))
 # STEP
 initial_model <- glm(
-  satisfaction ~ Gender + Customer.Type + poly(Age, 2) + Arrival.Delay.in.Minutes + (Type.of.Travel +
-    Class + Flight.Distance + Inflight.wifi.service + Departure.Arrival.time.convenient +
+  satisfaction ~ Gender + Customer.Type + poly(Age, 2) + Arrival.Delay.in.Minutes + Type.of.Travel +
+    Class + Flight.Distance + Inflight.wifi.service +
     Ease.of.Online.booking + Gate.location + Food.and.drink + Online.boarding +
     Seat.comfort + Inflight.entertainment + On.board.service + Leg.room.service +
-    Baggage.handling + Checkin.service + Inflight.service + Cleanliness +
-    Departure.Delay.in.Minutes)^2,
+    Baggage.handling + Checkin.service + Inflight.service + Cleanliness,
   data = train, family = binomial
 )
 
-stepwise_model <- step(initial_model, direction = "both", trace = 0)
+stepwise_model <- step(initial_model, direction = "both", trace = 1)
+
+#Step:  AIC=1922.22
+#satisfaction ~ Customer.Type + poly(Age, 2) + Type.of.Travel + 
+#    Class + Inflight.wifi.service + Ease.of.Online.booking + 
+#    Gate.location + Online.boarding + Seat.comfort + Inflight.entertainment + 
+#    On.board.service + Leg.room.service + Baggage.handling + 
+#    Checkin.service + Inflight.service + Cleanliness
 
 # RESIDUAL ANALYSIS OF THE STEP MODEL
 marginalModelPlots(stepwise_model)
@@ -694,31 +701,122 @@ residualPlots(stepwise_model)
 coef(stepwise_model)
 Anova(stepwise_model, test = "LR")
 AIC(stepwise_model)
-vif(stepwise_model)
-vif(stepwise_model, type = "predictor")
 ```
 
-Seeing what the `step` function returned, let's compare it to a model that
-solely includes the variables that seem to have the most significant impact on
-satisfaction.
+Next, we explore interaction terms between predictors. Starting with a base model that includes all significant predictors identified from the stepwise selection, we systematically examine potential interactions. This code is commented out due to the high computational cost and time it takes to execute.Each pair of predictors is tested by fitting a model that includes their interaction term and comparing it to the base model using an ANOVA test. Interaction terms that significantly improve model fit (p-value < 0.05) are added to the model.
+
+After identifying all significant interactions, we refit the final logistic regression model, now including these interaction terms. To further refine the model, a final stepwise selection is performed to ensure that only the necessary predictors and interactions are retained. For the subsequent steps, we will maintain both the simpler model without interactions and the more complex model with all significant interactions, validating the performance of each.
 
 ```{r}
-simpler_model <- glm(
-  satisfaction ~ Flight.Distance + poly(Age, 2) + Arrival.Delay.in.Minutes + Customer.Type + Type.of.Travel +
-    Class + Inflight.wifi.service + Cleanliness + Food.and.drink + Online.boarding + Seat.comfort +
-    Inflight.entertainment + On.board.service + Leg.room.service + Baggage.handling + Checkin.service,
-  data = train, family = binomial
-)
+# Define the base formula with no interactions
+base_formula <- "Customer.Type + poly(Age, 2) + Type.of.Travel + Class + 
+                 Inflight.wifi.service + Ease.of.Online.booking + Gate.location + 
+                 Online.boarding + Seat.comfort + Inflight.entertainment + 
+                 On.board.service + Leg.room.service + Baggage.handling + 
+                 Checkin.service + Inflight.service + Cleanliness"
 
-summary(m6)
+# List of predictors without interaction terms
+predictors <- c("Customer.Type", "poly(Age, 2)", "Type.of.Travel", "Class", 
+                "Inflight.wifi.service", "Ease.of.Online.booking", "Gate.location", 
+                "Online.boarding", "Seat.comfort", "Inflight.entertainment", 
+                "On.board.service", "Leg.room.service", "Baggage.handling", 
+                "Checkin.service", "Inflight.service", "Cleanliness")
 
-marginalModelPlots(m6)
-residualPlots(m6)
+# Initialize an empty list to store significant interaction terms
+significant_interactions <- list()
+
+# Fit the base model using logistic regression (binary outcome: satisfaction)
+base_model <- glm(as.formula(paste("satisfaction ~", base_formula)), 
+                      data = train, family = binomial)
+
+# Store the AIC of the base model
+base_aic <- AIC(base_model)
+
+# Start with the base formula for building the new model
+new_model <- base_formula
+
+# Loop over all pairs of predictors to check for significant interactions
+#for (i in 1:(length(predictors) - 1)) {
+#  for (j in (i + 1):length(predictors)) {
+#    # Define the interaction term
+#    interaction_term <- paste(predictors[i], predictors[j], sep = ":")
+#
+#    # Fit the model with the interaction term
+#    full_model <- glm(as.formula(paste("satisfaction ~", base_formula, "+", interaction_term)), 
+#                      data = train, family = binomial)#
+#
+#    # Perform ANOVA test to compare models
+#    anova_result <- anova(base_model, full_model, test = "Chisq")#
+#
+#    # Check if the interaction term is significant (p-value < 0.05)
+#    if (anova_result$`Pr(>Chi)`[2] < 0.05) {
+#      # If the interaction is significant, add it to the list of significant interactions
+#      significant_interactions[[length(significant_interactions) + 1]] <- interaction_term
+#      
+#      # Update the model with the significant interaction term
+ #     new_model <- paste0(new_model, "+", interaction_term)
+#      
+#      base_formula <- paste0(base_formula, "+", interaction_term)
+#    }
+#  }
+#}
+
+# Print the list of significant interactions
+#cat("Significant interactions:\n")
+#print(significant_interactions)
+
+# Fit the final model with all significant interactions
+#new_model <- glm(paste0("satisfaction ~", new_model), data = train, family = binomial)
+
+# Perform final stepwise regression
+#stepwise_final_model <- step(new_model, direction = "both", trace = 1)
+
+#Step:  AIC=1420.62
+#satisfaction ~ Customer.Type + poly(Age, 2) + Type.of.Travel + 
+#    Class + Inflight.wifi.service + Ease.of.Online.booking + 
+#    Gate.location + Online.boarding + Seat.comfort + Inflight.entertainment + 
+#    On.board.service + Leg.room.service + Baggage.handling + 
+#    Checkin.service + Inflight.service + Cleanliness + Customer.Type:poly(Age, 
+#    2) + Customer.Type:Inflight.wifi.service + Customer.Type:Gate.location + 
+#    Customer.Type:Online.boarding + Customer.Type:Seat.comfort + 
+#    Customer.Type:Leg.room.service + Customer.Type:Checkin.service + 
+#    Customer.Type:Inflight.service + Customer.Type:Cleanliness + 
+#    poly(Age, 2):Online.boarding + poly(Age, 2):Inflight.entertainment + 
+#    poly(Age, 2):Inflight.service + poly(Age, 2):Cleanliness + 
+#    Type.of.Travel:Class + Type.of.Travel:Inflight.wifi.service + 
+#    Type.of.Travel:Ease.of.Online.booking + Type.of.Travel:Online.boarding + 
+#    Type.of.Travel:Seat.comfort + Type.of.Travel:Inflight.entertainment + 
+#    Type.of.Travel:On.board.service + Type.of.Travel:Baggage.handling + 
+#    Type.of.Travel:Checkin.service + Type.of.Travel:Inflight.service + 
+#    Class:Inflight.wifi.service + Class:Inflight.entertainment + 
+#    Class:On.board.service + Class:Leg.room.service + Type.of.Travel:Gate.location
+
+stepwise_model <- glm(satisfaction ~ Customer.Type + poly(Age, 2) + Type.of.Travel + 
+    Class + Inflight.wifi.service + Ease.of.Online.booking + 
+    Gate.location + Online.boarding + Seat.comfort + Inflight.entertainment + 
+    On.board.service + Leg.room.service + Baggage.handling + 
+    Checkin.service + Inflight.service + Cleanliness + Customer.Type:poly(Age, 
+    2) + Customer.Type:Inflight.wifi.service + Customer.Type:Gate.location + 
+   Customer.Type:Leg.room.service + Customer.Type:Checkin.service + 
+    Customer.Type:Inflight.service + Customer.Type:Cleanliness + 
+    poly(Age, 2):Online.boarding + poly(Age, 2):Inflight.entertainment + 
+   poly(Age, 2):Inflight.service + poly(Age, 2):Cleanliness + 
+    Type.of.Travel:Class + Type.of.Travel:Inflight.wifi.service + 
+    Type.of.Travel:Ease.of.Online.booking + Type.of.Travel:Online.boarding + 
+    Type.of.Travel:Seat.comfort + Type.of.Travel:Inflight.entertainment + 
+    Type.of.Travel:On.board.service + Type.of.Travel:Baggage.handling + 
+    Type.of.Travel:Checkin.service + Type.of.Travel:Inflight.service + 
+    Class:Inflight.wifi.service + Class:Inflight.entertainment + 
+    Class:On.board.service + Class:Leg.room.service + Type.of.Travel:Gate.location,
+   data = train, family = binomial)
+
+marginalModelPlots(stepwise_model)
+residualPlots(stepwise_model)
+
+coef(stepwise_model)
+AIC(stepwise_model)
+
 ```
-
-As we can see, although this model does perform slightly worse than the one
-obtained through the stepwise method, it is much simpler and easier to interpret.
-In the following section, we will do a more thorough comparison between the two.
 
 
 # 5. Model Validation {#model-validation}
