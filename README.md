@@ -2438,11 +2438,7 @@ legend(
 
 ![](images/unnamed-chunk-54-1.png)
 
-When comparing the two curves, we can see that ….
-
-<!-- I cannot run the stepwise model!!!! I cannot compare the two curves -->
-
-And looking at the areas under the ROC curves, it becomes clear that,
+Looking at the areas under the ROC curves, it becomes clear that,
 indeed, the stepwise model is slightly better, but it’s complexity might
 not be worth the small improvement in performance, according to the AUC
 criterion.
@@ -2558,9 +2554,26 @@ simpler_accuracy
 
     ## [1] 0.0655
 
-As we can see…
-<!-- Comment on which model has the highest threshold, and the highest accuracy -->
-
 # 6. Conclusion
 
-<!-- Interpret the results :) -->
+In comparing the stepwise and simpler model, both demonstrate strong
+predictive capabilities, as evidenced by their high ROC AUC values of
+0.983 and 0.9747, respectively. The stepwise model, with a slightly
+higher AUC and initial accuracy of 0.938, indicates good discrimination
+ability and a strong performance in identifying ‘satisfied’ customers.
+However, it also shows signs of potential overfitting. The simpler
+model, despite a marginally lower AUC, proves to be more robust,
+achieving a slightly higher final accuracy of 0.0655 compared to the
+stepwise model. This suggests that the simpler model may offer a better
+balance between complexity and performance.
+
+The confusion matrix analysis further highlights the performance
+differences. The stepwise model shows a large number of false negatives
+(866) and false positives (1013), resulting in a lower final accuracy
+when calculated using the confusion matrix. This accuracy (0.0605 for
+the stepwise model and 0.0655 for the simpler model) reflects the
+proportion of correct classifications out of the total predictions,
+emphasizing the importance of optimal threshold selection for improving
+model performance. Overall, while the stepwise model provides slightly
+better initial metrics, the simpler model’s balance of accuracy and
+simplicity makes it a more practical choice for deployment.
